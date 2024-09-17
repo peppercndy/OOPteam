@@ -27,6 +27,7 @@ void Hero::showList() {
 
 void Hero::freeList() {
     std::cout << "链表已经全部清空。" << std::endl;
+    num=0;
     while (head != NULL) {
         Node* temp = head;
         head = head->next;
@@ -90,6 +91,7 @@ void Accout::showAccoutList() {
 }
 
 void Accout::freeLink() {
+    num=0;
     while (head != NULL) {
         auto temp = head;
         head = head->next;
@@ -122,6 +124,7 @@ void Accout::deleteAccout(const int& UID) {
         auto temp = head;
         head = head->next;
         delete temp;
+        num--;
         std::cout << "已删除UID为 " << UID << " 的结点" << std::endl << std::endl;
         return;
     }
@@ -130,9 +133,11 @@ void Accout::deleteAccout(const int& UID) {
         if (current->data.UID == UID) {
             previous->next = current->next;
             delete current;
+            num--;
             std::cout << "已删除UID为 " << UID << " 的账号" << std::endl << std::endl;
             return;
         }
+        previous=current;
     }
     std::cout << "不存在UID为 " << UID << " 的账号" << std::endl << std::endl;
 }
