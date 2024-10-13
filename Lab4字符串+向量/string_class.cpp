@@ -81,12 +81,12 @@ MyString& MyString::operator+=(const MyString& other) {
 }
 
 char& MyString::operator[](size_t index) {
-    if (index >= len) throw OutOfBoundsException();
+    if (index >= len) throw OutOfBoundsException("Index out of bounds");
     return data[index];
 }
 
 const char& MyString::operator[](size_t index) const {
-    if (index >= len) throw OutOfBoundsException();
+    if (index >= len) throw OutOfBoundsException("Index out of bounds");
     return data[index];
 }
 
@@ -125,4 +125,68 @@ bool MyString::operator>(const MyString& other) const {
 
 bool MyString::operator>=(const MyString& other) const {
     return std::strcmp(data, other.data) >= 0;
+}
+
+//其他方法
+MyString &MyString::insert(size_t pos, const char *str)
+{
+    int n = strlen(data);
+    if(pos>n || pos<0)
+    throw OutOfBoundsException("position out of bounds");
+    char *p = new char[strlen(data)+strlen(str)+1];
+    strncpy(p, data,pos );
+    p[pos] = '\0';
+    strcat(p, str);
+    strcat(p, data+pos);
+    delete[] data;
+    data = p;
+    len = strlen(data);
+    return *this;
+}
+
+MyString & MyString::insert(size_t pos, const MyString& str)
+{
+    int n = strlen(data);
+    if(pos>n || pos<0)
+    throw OutOfBoundsException("position out of bounds");
+    char *p = new char[strlen(data)+strlen(str.data)+1];
+    strncpy(p, data, pos);
+    p[pos] = '\0';
+    strcat(p , str.data);
+    strcat(p, data+pos);
+    delete[] data;
+    data = p;
+    len = strlen(data);
+    return *this;
+}
+
+MyString & MyString::erase(size_t pos ,size_t n){
+    if(pos<0 || pos>=len){
+        throw OutOfBoundsException("position out of bounds");
+    }
+    if(pos+n > len){
+        n = len - pos;
+    }
+    char* p = new char[len - n + 1];
+    strncpy(p, data, pos);
+    p[pos] = '\0';
+    strcat(p, data + pos + n);
+    delete[] data;
+    data = p;
+    len = len-n;
+    return *this;
+}
+
+MyString MyString::substring(size_t pos, size_t n) const{
+    if(pos<0 || pos>len)
+        throw OutOfBoundsException("position out of bounds");
+    if(pos+n > len)
+    {
+         n = len - pos;
+    }
+    char* p = new char[n+1];
+    strncpy(p, data+pos, n);
+    p[n] = '\0';
+    MyString result(p);
+    return result;
 }
