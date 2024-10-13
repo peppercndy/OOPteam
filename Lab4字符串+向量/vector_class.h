@@ -18,15 +18,15 @@ private:
 
 public:
 
-    Vector(size_t size=0) : size(size), capacity(size) ;
+    Vector(size_t size=0)  ;
 
-    Vector(size_t size, T value) : size(size), capacity(size) ;
+    Vector(size_t size, T value) ;
 
     // 使用初始化列表的构造函数
-    Vector(std::initializer_list<T> init) : size(init.size()), capacity(init.size());
+    Vector(std::initializer_list<T> init) ;
 
     // 拷贝构造函数
-    Vector(const Vector& other) : size(other.size), capacity(other.capacity) ;
+    Vector(const Vector& other)  ;
 
     // 赋值运算符
     Vector& operator=(const Vector& other) ;
@@ -79,9 +79,24 @@ public:
 
     bool operator<=(const Vector<T> & other) const;
     //重载输出流运算符
-    friend ostream& operator<<(ostream& out, const Vector<T>& vec);
+    friend ostream& operator<<(ostream& out, const Vector<T>& vec) {
+        out << "(" ;
+        for (size_t i = 0; i < vec.size; ++i) {
+            out  << vec.data[i];
+            if (i != vec.size - 1) {
+                out << ", ";
+            }
+        }
+        out << ")";
+        return out;
+    }
 
-    friend istream& operator>>(istream& in, Vector<T>& vec) ;
+    friend istream& operator>>(istream& in, Vector<T>& vec)  {
+        for (size_t i = 0; i < vec.size; ++i) {
+            in >> vec.data[i];
+        }
+        return in;
+    }
 
 private:
     // 重新分配空间
@@ -107,7 +122,7 @@ private:
     }
 };
 
-    template<typename T> Vector<T>:: Vector(size_t size=0) : size(size), capacity(size) {
+    template<typename T> Vector<T>:: Vector(size_t size) : size(size), capacity(size) {
         data = new T[capacity];
     }
 
@@ -306,24 +321,7 @@ private:
         }
         return true;
     }
-     template<typename T> ostream& operator<<(ostream& out, const Vector<T>& vec) {
-        out << "(" ;
-        for (size_t i = 0; i < vec.size; ++i) {
-            out  << vec.data[i];
-            if (i != vec.size - 1) {
-                out << ", ";
-            }
-        }
-        out << ")";
-        return out;
-    }
-
-   template<typename T> istream& operator>>(istream& in, Vector<T>& vec) {
-        for (size_t i = 0; i < vec.size; ++i) {
-            in >> vec.data[i];
-        }
-        return in;
-    }
+    
 
 // 测试示例
 void testVector() {
