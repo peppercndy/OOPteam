@@ -18,15 +18,15 @@ private:
 
 public:
 
-    Vector(size_t size=0) : size(size), capacity(size) ;
+    Vector(size_t size=0)  ;
 
-    Vector(size_t size, T value) : size(size), capacity(size) ;
+    Vector(size_t size, T value) ;
 
     // 使用初始化列表的构造函数
-    Vector(std::initializer_list<T> init) : size(init.size()), capacity(init.size());
+    Vector(std::initializer_list<T> init) ;
 
     // 拷贝构造函数
-    Vector(const Vector& other) : size(other.size), capacity(other.capacity) ;
+    Vector(const Vector& other)  ;
 
     // 赋值运算符
     Vector& operator=(const Vector& other) ;
@@ -79,9 +79,24 @@ public:
 
     bool operator<=(const Vector<T> & other) const;
     //重载输出流运算符
-    friend ostream& operator<<(ostream& out, const Vector<T>& vec);
+    friend ostream& operator<<(ostream& out, const Vector<T>& vec) {
+        out << "(" ;
+        for (size_t i = 0; i < vec.size; ++i) {
+            out  << vec.data[i];
+            if (i != vec.size - 1) {
+                out << ", ";
+            }
+        }
+        out << ")";
+        return out;
+    }
 
-    friend istream& operator>>(istream& in, Vector<T>& vec) ;
+    friend istream& operator>>(istream& in, Vector<T>& vec)  {
+        for (size_t i = 0; i < vec.size; ++i) {
+            in >> vec.data[i];
+        }
+        return in;
+    }
 
 private:
     // 重新分配空间
@@ -107,7 +122,7 @@ private:
     }
 };
 
-    template<typename T> Vector<T>:: Vector(size_t size=0) : size(size), capacity(size) {
+    template<typename T> Vector<T>:: Vector(size_t size) : size(size), capacity(size) {
         data = new T[capacity];
     }
 
@@ -183,6 +198,8 @@ private:
 
     // 向量插入元素
     template<typename T> void Vector<T>:: insert(size_t index, const T& value) {
+       if(index > size||index<0)
+            throw std::out_of_range("Index out of range");
         if (size >= capacity) {
             resize();
         }
@@ -195,6 +212,8 @@ private:
 
     //向量范围插入
     template<typename T> void Vector<T>:: insert(size_t index, size_t count, const T& value) {
+        if(index > size||index<0)
+            throw std::out_of_range("Index out of range");
         if (size + count > capacity) {
                resize();
         }
@@ -210,7 +229,7 @@ private:
 
     // 向量删除元素
     template<typename T> void Vector<T>:: erase(size_t index) {
-        if (index >= size) {
+        if(index > size||index<0) {
             throw std::out_of_range("Index out of range");
         }
         for (size_t i = index; i < size - 1; ++i) {
@@ -221,7 +240,7 @@ private:
 
     //向量范围删除
     template<typename T> void Vector<T>:: erase(size_t index, size_t count) {
-        if (index >= size) {
+       if(index > size||index<0) {
             throw std::out_of_range("Index out of range");
         }
         if (index + count > size) {
@@ -240,7 +259,7 @@ private:
 
     // 下标运算符重载
     template<typename T> T& Vector<T>::  operator[](size_t index) const{
-        if (index >= size) {
+        if (index >= size||index<0) {
             throw std::out_of_range("Index out of range");
         }
         return data[index];
@@ -306,33 +325,18 @@ private:
         }
         return true;
     }
-     template<typename T> ostream& operator<<(ostream& out, const Vector<T>& vec) {
-        out << "(" ;
-        for (size_t i = 0; i < vec.size; ++i) {
-            out  << vec.data[i];
-            if (i != vec.size - 1) {
-                out << ", ";
-            }
-        }
-        out << ")";
-        return out;
-    }
-
-   template<typename T> istream& operator>>(istream& in, Vector<T>& vec) {
-        for (size_t i = 0; i < vec.size; ++i) {
-            in >> vec.data[i];
-        }
-        return in;
-    }
+    
 
 // 测试示例
 void testVector() {
     string s1 = "hello";
     Vector<int> v1(5, 1);
     Vector<int> v2(v1);
+    Vector<int>v3 =v1+v2;
+    Vector<int> v4= v1+v2+v3;
     cout << v1+v2 << endl;
     v1.insert(1,3,2);
-    cout << v1;
+    cout << v4;
 }
 
 
