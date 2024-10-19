@@ -49,7 +49,7 @@ class Vector{
         }
 
     //5. 纯虚运算符重载+
-        virtual Vector<T>& operator+(const Vector<T> & other)=0;
+        virtual Vector<T>& operator+=(const Vector<T> & other)=0;
         //得到size
         size_t getSize()const{
             return size;
@@ -93,11 +93,14 @@ class DerivedVector:public Vector<T>{
             return this->data[index];
         }
 
-        DerivedVector<T>& operator+(const Vector<T> & other) override{
+        DerivedVector<T>& operator+=(const Vector<T> & other) override{
             if(this->size!=other.getSize()){
                 throw "维度不一样的向量不能相加";
             }
+            T arr[this->getSize()]{};
+            //DerivedVector<int> result(this->getSize(),arr);
             for(size_t i=0;i<other.getSize();++i){
+                //result.set(i)=this->data[i]+other.get(i);
                 this->data[i]+=other.get(i);
             }
             return *this;
@@ -122,7 +125,7 @@ class String:public Vector<std::string>{
             return this->data[index];
         }
 
-        String & operator+(const Vector<std::string>& other)override{
+        String & operator+=(const Vector<std::string>& other)override{
             size_t newsize=this->size+other.getSize();
             std::string* newdata=new std::string[newsize];
 
@@ -211,11 +214,11 @@ void menu2(){
         vec3.display();
         std::cout<<"**********派生向量·功能演示**********"<<std::endl;
         std::cout<<"*****1.“运算符=”功能演示*******"<<std::endl;
-        std::cout<<"*****2.“运算符+”功能演示*******"<<std::endl;
+        std::cout<<"*****2.“运算符+=”功能演示*******"<<std::endl;
         std::cout<<"*****3.“函数get”功能演示*******"<<std::endl;
         std::cout<<"*****4.“函数set”功能演示*******"<<std::endl;
         std::cout<<"*****5.“运算符=”异常操作功能演示"<<std::endl;
-        std::cout<<"*****6.“运算符+”异常操作功能演示"<<std::endl;
+        std::cout<<"*****6.“运算符+=”异常操作功能演示"<<std::endl;
         std::cout<<"*****7.“函数get”异常操作功能演示"<<std::endl;
         std::cout<<"*****8.“函数set”异常操作功能演示"<<std::endl;
         std::cout<<"===================================="<<std::endl;
@@ -239,14 +242,16 @@ void menu2(){
             continue;
         }
         if(judge==2){
-            std::cout<<std::endl<<"下面进行赋值运算符+的测试"<<std::endl;
+            std::cout<<std::endl<<"下面进行赋值运算符+=的测试"<<std::endl;
             try{
                 std::cout<<"将测试数据2与测试数据1相加"<<std::endl;
-                int result_arr[3]{0,0,0};
-                DerivedVector<int> result(3,result_arr);
-                result=std::move(vec1+vec2);
+                //int result_arr[3]{0,0,0};
+                //DerivedVector<int> result(3,result_arr);
+               // result=std::move(vec1+vec2);
+                vec1+=vec2;
                 std::cout<<"输出相加后的向量"<<std::endl;
-                result.display();
+                vec1.display();
+                //result.display();
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
             }
@@ -290,14 +295,15 @@ void menu2(){
             continue;
         }
         if(judge==6){
-            std::cout<<std::endl<<"下面进行赋值运算符+异常的测试"<<std::endl;
+            std::cout<<std::endl<<"下面进行赋值运算符+=异常的测试"<<std::endl;
             try{
                 std::cout<<"将测试数据3与测试数据1相加"<<std::endl;
-                int result_arr[3]{0,0,0};
-                DerivedVector<int> result(3,result_arr);
-                result=std::move(vec1+vec3);
+                //int result_arr[3]{0,0,0};
+                //DerivedVector<int> result(3,result_arr);
+                //result=std::move(vec1+vec3);
+                vec1+=vec3;
                 std::cout<<"输出相加后的向量"<<std::endl;
-                result.display();
+                //result.display();
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
             }
@@ -349,7 +355,7 @@ void menu3(){
         str3.display();
         std::cout<<"**********派生字符串·功能演示**********"<<std::endl;
         std::cout<<"*****1.“运算符=”功能演示*******"<<std::endl;
-        std::cout<<"*****2.“运算符+”功能演示*******"<<std::endl;
+        std::cout<<"*****2.“运算符+=”功能演示*******"<<std::endl;
         std::cout<<"*****3.“函数get”功能演示*******"<<std::endl;
         std::cout<<"*****4.“函数set”功能演示*******"<<std::endl;
         std::cout<<"*****5.“运算符=”异常操作功能演示"<<std::endl;
@@ -376,13 +382,15 @@ void menu3(){
             continue;
         }
         if(judge==2){
-            std::cout<<std::endl<<"下面进行赋值运算符+的测试"<<std::endl;
+            std::cout<<std::endl<<"下面进行赋值运算符+=的测试"<<std::endl;
                 std::cout<<"将测试数据2与测试数据1相加"<<std::endl;
-                std::string result_arr[10]{};
-                String result(10,result_arr);
-                result=std::move(str1+str2);
+                //std::string result_arr[10]{};
+                //String result(10,result_arr);
+                //result=std::move(str1+str2);
+                str1+=str2;
+                str1.display();
                 std::cout<<"输出相加后的字符串"<<std::endl;
-                result.display();
+                //result.display();
             continue;
         }
          if(judge==3){
