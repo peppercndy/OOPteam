@@ -1,44 +1,47 @@
 #include<iostream>
+#include<cstring>
 
 template<class T>
 class Vector{
     protected:
-    //size´¢´æÏòÁ¿´óĞ¡
+    //sizeå‚¨å­˜å‘é‡å¤§å°
         size_t size;
 
-    //data´¢´æÊı¾İ
+    //dataå‚¨å­˜æ•°æ®
         T *data;
 
     public:
-    /******************¹¹Ôìº¯Êı²»ÄÜĞ´³ÉĞé¹¹º¯Êı**********/
-    //1.³õÊ¼»¯¹¹Ôìº¯Êı
-        Vector(size_t size):size(size),data(new T[size]){}
+    /******************æ„é€ å‡½æ•°ä¸èƒ½å†™æˆè™šæ„å‡½æ•°**********/
+    //1.åˆå§‹åŒ–æ„é€ å‡½æ•°
+        Vector():size(0),data(nullptr){};
+        Vector(size_t size):size(size),data(new T[size]){
+        }
 
-    //2. ²ÎÊı»¯¹¹Ôìº¯Êı
+    //2. å‚æ•°åŒ–æ„é€ å‡½æ•°
         Vector(size_t size,const T *arr):size(size),data(new T[size]){
             std::copy(arr,arr+size,data);
         }
 
 /*
-    //2. ÒÆ¶¯¹¹Ôìº¯Êı
+    //2. ç§»åŠ¨æ„é€ å‡½æ•°
         Vector(Vector && other)noexcept:size(other.size),data(other.data){
-            /*Òª°ÑotherÈ«²¿Çå¿Õ ÃâµÃotherÎö¹¹Ê±ºò°ÑÔ­±¾µÄÊı¾İÇå¿ÕÁË*/
+            /*è¦æŠŠotherå…¨éƒ¨æ¸…ç©º å…å¾—otherææ„æ—¶å€™æŠŠåŸæœ¬çš„æ•°æ®æ¸…ç©ºäº†*/
 /*
             other.size=0;
             other.data=nullptr;
         }
 */
 
-    //3. ĞéÎö¹¹º¯Êı
+    //3. è™šææ„å‡½æ•°
         virtual ~Vector(){
-            //std::cout<<"µ÷ÓÃÁË»ùÀàµÄ´¿Ğéº¯Êı"<<std::endl;
+            //std::cout<<"è°ƒç”¨äº†åŸºç±»çš„çº¯è™šå‡½æ•°"<<std::endl;
             delete []data;
         }
 
-    //4. ĞéÒÆ¶¯¸³ÖµÔËËã·û
+    //4. è™šç§»åŠ¨èµ‹å€¼è¿ç®—ç¬¦
         virtual Vector& operator=(Vector && other){
             if(size!=other.getSize()){
-                throw "Î¬¶È²»Í¬£¡£¡ÎŞ·¨¸³Öµ";
+                throw "ç»´åº¦ä¸åŒï¼ï¼æ— æ³•èµ‹å€¼";
             }
             delete[]data;
             size=other.size;
@@ -48,38 +51,41 @@ class Vector{
             return *this;
         }
 
-    //5. ´¿ĞéÔËËã·ûÖØÔØ+
+    //5. çº¯è™šè¿ç®—ç¬¦é‡è½½+
         virtual Vector<T>& operator+=(const Vector<T> & other)=0;
-        //µÃµ½size
-        size_t getSize()const{
+        //å¾—åˆ°size
+        virtual size_t getSize()const{
             return size;
         }
 
-    //6. ´¿Ğéº¯Êıset: ¸ü¸ÄÄ³¸öË÷ÒıµÄÔªËØ
-        //³¬³ö½çÏŞ¾Í±¨´í
+    //6. çº¯è™šå‡½æ•°set: æ›´æ”¹æŸä¸ªç´¢å¼•çš„å…ƒç´ 
+        //è¶…å‡ºç•Œé™å°±æŠ¥é”™
         virtual void set(size_t index,const T & value)=0;
 
-    //7. ´¿Ğéº¯Êıget£ºµÃµ½Ä³¸öË÷ÒıµÄÔªËØ
+    //7. çº¯è™šå‡½æ•°getï¼šå¾—åˆ°æŸä¸ªç´¢å¼•çš„å…ƒç´ 
         virtual T get(size_t index)const=0;
 
-    //8. Ğéº¯Êıdisplay£ºÕ¹Ê¾Êı¾İ
+    //8. è™šå‡½æ•°displayï¼šå±•ç¤ºæ•°æ®
         virtual void display()const{
             for(size_t i=0;i<size;++i){
                 std::cout<<data[i]<<" ";
             }
             std::cout<<std::endl;
         }
-
+        //9. çº¯è™šå‡½æ•°append: å‘é‡å°¾éƒ¨æ·»åŠ å…ƒç´ 
+        virtual void append(const T & value)=0;
 };
 
 template<class T>
 class DerivedVector:public Vector<T>{
     public:
-        DerivedVector(size_t size, const T *arr) : Vector<T>(size, arr) {}
-        //ÊµÏÖĞéº¯Êı
+        DerivedVector(size_t size, const T *arr) : Vector<T>(size, arr){
+            capacity =  size;
+        }
+        //å®ç°è™šå‡½æ•°
         void set(size_t index,const T & value)override{
             if(index>=this->size){
-                throw "³¬³ö½çÏŞ£¡£¡ÉèÖÃ²»ÁË£¡";
+                throw "è¶…å‡ºç•Œé™ï¼ï¼è®¾ç½®ä¸äº†ï¼";
             }
             else{
                 this->data[index]=value;
@@ -88,14 +94,14 @@ class DerivedVector:public Vector<T>{
 
         T get(size_t index)const override{
             if(index>=this->size){
-                throw "³¬³ö½çÏŞ£¡£¡Ã»ÓĞÊı¾İ£¡";
+                throw "è¶…å‡ºç•Œé™ï¼ï¼æ²¡æœ‰æ•°æ®ï¼";
             }
             return this->data[index];
         }
 
         DerivedVector<T>& operator+=(const Vector<T> & other) override{
             if(this->size!=other.getSize()){
-                throw "Î¬¶È²»Ò»ÑùµÄÏòÁ¿²»ÄÜÏà¼Ó";
+                throw "ç»´åº¦ä¸ä¸€æ ·çš„å‘é‡ä¸èƒ½ç›¸åŠ ";
             }
             T arr[this->getSize()]{};
             //DerivedVector<int> result(this->getSize(),arr);
@@ -106,28 +112,70 @@ class DerivedVector:public Vector<T>{
             return *this;
             //return DerivedVector()
         }
+
+        //å®ç°çº¯è™šå‡½æ•°append
+        void append(const T &value) override
+        {
+            if(this->size+1>capacity)
+            resize();
+            this->data[this->size]=value;
+            this->size++;
+        }
+
+        protected:
+           size_t capacity; //å®¹é‡
+           void resize(size_t newcapacity){
+                this->data=new T[newcapacity];
+                capacity=newcapacity;
+            }
+           void resize(){
+                capacity*=2;
+                this->data=new T[capacity];
+            }
 };
 
-//×Ö·û´®ÀàÒÑ¾­ÊÇ×Ö·û´®ÁË
-class String:public Vector<std::string>{
+//å­—ç¬¦ä¸²ç±»å·²ç»æ˜¯å­—ç¬¦ä¸²äº†
+class String:public Vector<char>{
     public:
-        String(size_t size, const std::string *arr) : Vector<std::string>(size, arr) {}
-        void set(size_t index,const std::string & value)override{
+        String(){
+            size=0;
+            data=new char[1];
+            data[0]='\0';
+        }
+
+        String(size_t Size, const char *arr)  {
+            int n = strlen(arr);
+            if(Size>n)
+            Size = n;
+            else if(Size < 0)
+            Size = 0;
+            size=Size;
+            data=new char[Size+1];
+            for(int i=0;i<Size;++i)
+            data[i]=arr[i];
+            data[Size]='\0';
+        }
+
+        size_t getSize()const{
+            return size;
+        }
+
+        void set(size_t index,const char & value)override{
             if(index>=this->size){
-                throw "³¬³ö½çÏŞ£¡£¡²»ÄÜÉèÖÃ£¡";
+                throw "è¶…å‡ºç•Œé™ï¼ï¼ä¸èƒ½è®¾ç½®ï¼";
             }
             this->data[index]=value;
         }
-        std::string get(size_t index)const override{
+        char get(size_t index)const override{
             if(index>=this->size){
-                throw "³¬³ö½çÏŞ£¡£¡Ã»ÓĞÊı¾İ£¡";
+                throw "è¶…å‡ºç•Œé™ï¼ï¼æ²¡æœ‰æ•°æ®ï¼";
             }
             return this->data[index];
         }
 
-        String & operator+=(const Vector<std::string>& other)override{
+        String & operator+=(const Vector<char>& other)override{
             size_t newsize=this->size+other.getSize();
-            std::string* newdata=new std::string[newsize];
+            char* newdata=new char[newsize+1];
 
             for(size_t i=0;i<this->size;++i){
                 newdata[i]=this->data[i];
@@ -135,39 +183,53 @@ class String:public Vector<std::string>{
             for(size_t i=0;i<other.getSize();++i){
                 newdata[i+this->size]=other.get(i);
             }
+            newdata[newsize]='\0';
             this->size=newsize;
             this->data=newdata;
             return *this;
+        }
+
+        void append(const char &value) override {
+            char* newdata=new char [size+1];
+            for(size_t t=0;t<size;t++)
+            {
+                newdata[t]=data[t];
+            }
+            newdata[size]=value;
+            size++;
+            data=newdata;
+            delete[]newdata;
+        }
             /*
             //String* result = new String(this->size + other.getSize());
             delete this->data;
             //size_t s=this->size;
             this->size=this->size+other.getSize();
-            this->data=new std::string[this->size];
+            this->data=new char[this->size];
             for(size_t i=0;i<this->size;++i){
 
             }
             */
-            
-        }
 };
 void menu1();
 void menu2();
 void menu3();
+
 int main(){
     menu1();
     return 0;
 }
+
 void menu1(){
     
-    //²Ëµ¥1
+    //èœå•1
     while (true){
         std::cout<<std::endl<<std::endl;
-    std::cout<<"***************¹¦ÄÜÑİÊ¾*************"<<std::endl;
-    std::cout<<"*****1.ÏòÁ¿ÑİÊ¾*******"<<std::endl;
-    std::cout<<"*****2.×Ö·û´®ÑİÊ¾*****"<<std::endl;
+    std::cout<<"***************åŠŸèƒ½æ¼”ç¤º*************"<<std::endl;
+    std::cout<<"*****1.å‘é‡æ¼”ç¤º*******"<<std::endl;
+    std::cout<<"*****2.å­—ç¬¦ä¸²æ¼”ç¤º*****"<<std::endl;
     std::cout<<"===================================="<<std::endl;
-    std::cout<<"*******ÇëÊäÈë²Ù×÷(°´0ÍË³ö): ";
+    std::cout<<"*******è¯·è¾“å…¥æ“ä½œ(æŒ‰0é€€å‡º): ";
     int judge;
     std::cin>>judge;
     if(judge==0){
@@ -201,40 +263,40 @@ void menu2(){
         DerivedVector<int> vec3(4,arr3);
         DerivedVector<int> vec2(3,arr2);
         std::cout<<std::endl<<std::endl;
-        std::cout<<"~~ËµÃ÷£º±¾²Ëµ¥ÊÇ²âÊÔÅÉÉúÀàÏòÁ¿Ä£°å~~"<<std::endl;
-        std::cout<<"~~²âÊÔÊı¾İÓĞ£º~~"<<std::endl;
+        std::cout<<"~~è¯´æ˜ï¼šæœ¬èœå•æ˜¯æµ‹è¯•æ´¾ç”Ÿç±»å‘é‡æ¨¡æ¿~~"<<std::endl;
+        std::cout<<"~~æµ‹è¯•æ•°æ®æœ‰ï¼š~~"<<std::endl;
        // DerivedVector<int> vec1(3,arr1);
-        std::cout<<"²âÊÔÊı¾İ1£¨3Î¬ÕûÊı£©: ";
+        std::cout<<"æµ‹è¯•æ•°æ®1ï¼ˆ3ç»´æ•´æ•°ï¼‰: ";
         vec1.display();
        // DerivedVector<int> vec2(3,arr2);
-        std::cout<<"²âÊÔÊı¾İ2£¨3Î¬ÕûÊı£©: ";
+        std::cout<<"æµ‹è¯•æ•°æ®2ï¼ˆ3ç»´æ•´æ•°ï¼‰: ";
         vec2.display();
        // DerivedVector<int> vec3(4,arr3);
-        std::cout<<"²âÊÔÊı¾İ3£¨4Î¬ÕûÊı£©: ";
+        std::cout<<"æµ‹è¯•æ•°æ®3ï¼ˆ4ç»´æ•´æ•°ï¼‰: ";
         vec3.display();
-        std::cout<<"**********ÅÉÉúÏòÁ¿¡¤¹¦ÄÜÑİÊ¾**********"<<std::endl;
-        std::cout<<"*****1.¡°ÔËËã·û=¡±¹¦ÄÜÑİÊ¾*******"<<std::endl;
-        std::cout<<"*****2.¡°ÔËËã·û+=¡±¹¦ÄÜÑİÊ¾*******"<<std::endl;
-        std::cout<<"*****3.¡°º¯Êıget¡±¹¦ÄÜÑİÊ¾*******"<<std::endl;
-        std::cout<<"*****4.¡°º¯Êıset¡±¹¦ÄÜÑİÊ¾*******"<<std::endl;
-        std::cout<<"*****5.¡°ÔËËã·û=¡±Òì³£²Ù×÷¹¦ÄÜÑİÊ¾"<<std::endl;
-        std::cout<<"*****6.¡°ÔËËã·û+=¡±Òì³£²Ù×÷¹¦ÄÜÑİÊ¾"<<std::endl;
-        std::cout<<"*****7.¡°º¯Êıget¡±Òì³£²Ù×÷¹¦ÄÜÑİÊ¾"<<std::endl;
-        std::cout<<"*****8.¡°º¯Êıset¡±Òì³£²Ù×÷¹¦ÄÜÑİÊ¾"<<std::endl;
+        std::cout<<"**********æ´¾ç”Ÿå‘é‡Â·åŠŸèƒ½æ¼”ç¤º**********"<<std::endl;
+        std::cout<<"*****1.â€œè¿ç®—ç¬¦=â€åŠŸèƒ½æ¼”ç¤º*******"<<std::endl;
+        std::cout<<"*****2.â€œè¿ç®—ç¬¦+=â€åŠŸèƒ½æ¼”ç¤º*******"<<std::endl;
+        std::cout<<"*****3.â€œå‡½æ•°getâ€åŠŸèƒ½æ¼”ç¤º*******"<<std::endl;
+        std::cout<<"*****4.â€œå‡½æ•°setâ€åŠŸèƒ½æ¼”ç¤º*******"<<std::endl;
+        std::cout<<"*****5.â€œè¿ç®—ç¬¦=â€å¼‚å¸¸æ“ä½œåŠŸèƒ½æ¼”ç¤º"<<std::endl;
+        std::cout<<"*****6.â€œè¿ç®—ç¬¦+=â€å¼‚å¸¸æ“ä½œåŠŸèƒ½æ¼”ç¤º"<<std::endl;
+        std::cout<<"*****7.â€œå‡½æ•°getâ€å¼‚å¸¸æ“ä½œåŠŸèƒ½æ¼”ç¤º"<<std::endl;
+        std::cout<<"*****8.â€œå‡½æ•°setâ€å¼‚å¸¸æ“ä½œåŠŸèƒ½æ¼”ç¤º"<<std::endl;
         std::cout<<"===================================="<<std::endl;
-        std::cout<<"*******ÇëÊäÈë²Ù×÷(°´0ÍË³ö): ";
+        std::cout<<"*******è¯·è¾“å…¥æ“ä½œ(æŒ‰0é€€å‡º): ";
         int judge;
         std::cin>>judge;        
         if(judge==0){
             break;
         }
         if(judge==1){
-            //std::cout<<"¿ÉÒÔ"<<std::endl;
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞ¸³ÖµÔËËã·û=µÄ²âÊÔ"<<std::endl;
+            //std::cout<<"å¯ä»¥"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œèµ‹å€¼è¿ç®—ç¬¦=çš„æµ‹è¯•"<<std::endl;
             try{
-                std::cout<<"½«²âÊÔÊı¾İ2¸³Öµ¸ø²âÊÔÊı¾İ1"<<std::endl;
+                std::cout<<"å°†æµ‹è¯•æ•°æ®2èµ‹å€¼ç»™æµ‹è¯•æ•°æ®1"<<std::endl;
                 vec1=std::move(vec2);
-                std::cout<<"Êä³ö²âÊÔÊı¾İ1"<<std::endl;
+                std::cout<<"è¾“å‡ºæµ‹è¯•æ•°æ®1"<<std::endl;
                 vec1.display();
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
@@ -242,14 +304,14 @@ void menu2(){
             continue;
         }
         if(judge==2){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞ¸³ÖµÔËËã·û+=µÄ²âÊÔ"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œèµ‹å€¼è¿ç®—ç¬¦+=çš„æµ‹è¯•"<<std::endl;
             try{
-                std::cout<<"½«²âÊÔÊı¾İ2Óë²âÊÔÊı¾İ1Ïà¼Ó"<<std::endl;
+                std::cout<<"å°†æµ‹è¯•æ•°æ®2ä¸æµ‹è¯•æ•°æ®1ç›¸åŠ "<<std::endl;
                 //int result_arr[3]{0,0,0};
                 //DerivedVector<int> result(3,result_arr);
                // result=std::move(vec1+vec2);
                 vec1+=vec2;
-                std::cout<<"Êä³öÏà¼ÓºóµÄÏòÁ¿"<<std::endl;
+                std::cout<<"è¾“å‡ºç›¸åŠ åçš„å‘é‡"<<std::endl;
                 vec1.display();
                 //result.display();
             }catch(const char*e){
@@ -258,11 +320,11 @@ void menu2(){
             continue;
         }
         if(judge==3){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞº¯ÊıgetµÄ²âÊÔ"<<std::endl;
-            std::cout<<"º¯ÊıgetÊµÏÖµÄ¹¦ÄÜÊÇÒÀ¾İË÷Òı·µ»ØÖµ£¬"<<std::endl;
-            std::cout<<"ÀıÈçÒÀ¾İË÷Òı3£¬µÃµ½Êı¾İa[3]"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œå‡½æ•°getçš„æµ‹è¯•"<<std::endl;
+            std::cout<<"å‡½æ•°getå®ç°çš„åŠŸèƒ½æ˜¯ä¾æ®ç´¢å¼•è¿”å›å€¼ï¼Œ"<<std::endl;
+            std::cout<<"ä¾‹å¦‚ä¾æ®ç´¢å¼•3ï¼Œå¾—åˆ°æ•°æ®a[3]"<<std::endl;
             try{
-                std::cout<<"ÔÚ²âÊÔÊı¾İ1ÖĞ·µ»ØË÷ÒıÎª2µÄÊı¾İ:"<<std::endl;
+                std::cout<<"åœ¨æµ‹è¯•æ•°æ®1ä¸­è¿”å›ç´¢å¼•ä¸º2çš„æ•°æ®:"<<std::endl;
                 std::cout<<vec1.get(2)<<std::endl;
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
@@ -270,11 +332,11 @@ void menu2(){
             continue;
         }
         if(judge==4){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞº¯ÊısetµÄ²âÊÔ"<<std::endl;
-            std::cout<<"º¯ÊısetÊµÏÖµÄ¹¦ÄÜÊÇÒÀ¾İË÷ÒıĞŞ¸ÄÖµ£¬"<<std::endl;
-            std::cout<<"ÀıÈçÒÀ¾İË÷Òı3£¬ĞŞ¸ÄÊı¾İa[3]"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œå‡½æ•°setçš„æµ‹è¯•"<<std::endl;
+            std::cout<<"å‡½æ•°setå®ç°çš„åŠŸèƒ½æ˜¯ä¾æ®ç´¢å¼•ä¿®æ”¹å€¼ï¼Œ"<<std::endl;
+            std::cout<<"ä¾‹å¦‚ä¾æ®ç´¢å¼•3ï¼Œä¿®æ”¹æ•°æ®a[3]"<<std::endl;
             try{
-                std::cout<<"ÔÚ²âÊÔÊı¾İ1ÖĞĞŞ¸ÄË÷ÒıÎª2µÄÊı¾İÎª1:"<<std::endl;
+                std::cout<<"åœ¨æµ‹è¯•æ•°æ®1ä¸­ä¿®æ”¹ç´¢å¼•ä¸º2çš„æ•°æ®ä¸º1:"<<std::endl;
                 vec1.set(2,1);
                 vec1.display();
             }catch(const char*e){
@@ -283,11 +345,11 @@ void menu2(){
             continue;
         }
         if(judge==5){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞ¸³ÖµÔËËã·û=µÄÒì³£²âÊÔ"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œèµ‹å€¼è¿ç®—ç¬¦=çš„å¼‚å¸¸æµ‹è¯•"<<std::endl;
             try{
-                std::cout<<"½«²âÊÔÊı¾İ3¸³Öµ¸ø²âÊÔÊı¾İ1"<<std::endl;
+                std::cout<<"å°†æµ‹è¯•æ•°æ®3èµ‹å€¼ç»™æµ‹è¯•æ•°æ®1"<<std::endl;
                 vec1=std::move(vec3);
-                std::cout<<"Êä³ö²âÊÔÊı¾İ1"<<std::endl;
+                std::cout<<"è¾“å‡ºæµ‹è¯•æ•°æ®1"<<std::endl;
                 vec1.display();
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
@@ -295,25 +357,25 @@ void menu2(){
             continue;
         }
         if(judge==6){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞ¸³ÖµÔËËã·û+=Òì³£µÄ²âÊÔ"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œèµ‹å€¼è¿ç®—ç¬¦+=å¼‚å¸¸çš„æµ‹è¯•"<<std::endl;
             try{
-                std::cout<<"½«²âÊÔÊı¾İ3Óë²âÊÔÊı¾İ1Ïà¼Ó"<<std::endl;
+                std::cout<<"å°†æµ‹è¯•æ•°æ®3ä¸æµ‹è¯•æ•°æ®1ç›¸åŠ "<<std::endl;
                 //int result_arr[3]{0,0,0};
                 //DerivedVector<int> result(3,result_arr);
                 //result=std::move(vec1+vec3);
                 vec1+=vec3;
-                std::cout<<"Êä³öÏà¼ÓºóµÄÏòÁ¿"<<std::endl;
+                std::cout<<"è¾“å‡ºç›¸åŠ åçš„å‘é‡"<<std::endl;
                 //result.display();
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
             }
         }
         if(judge==7){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞº¯ÊıgetµÄÒì³£²âÊÔ"<<std::endl;
-            std::cout<<"º¯ÊıgetÊµÏÖµÄ¹¦ÄÜÊÇÒÀ¾İË÷Òı·µ»ØÖµ£¬"<<std::endl;
-            std::cout<<"ÀıÈçÒÀ¾İË÷Òı3£¬µÃµ½Êı¾İa[3]"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œå‡½æ•°getçš„å¼‚å¸¸æµ‹è¯•"<<std::endl;
+            std::cout<<"å‡½æ•°getå®ç°çš„åŠŸèƒ½æ˜¯ä¾æ®ç´¢å¼•è¿”å›å€¼ï¼Œ"<<std::endl;
+            std::cout<<"ä¾‹å¦‚ä¾æ®ç´¢å¼•3ï¼Œå¾—åˆ°æ•°æ®a[3]"<<std::endl;
             try{
-                std::cout<<"ÔÚ²âÊÔÊı¾İ1ÖĞ·µ»ØË÷ÒıÎª3µÄÊı¾İ:"<<std::endl;
+                std::cout<<"åœ¨æµ‹è¯•æ•°æ®1ä¸­è¿”å›ç´¢å¼•ä¸º3çš„æ•°æ®:"<<std::endl;
                 std::cout<<vec1.get(3)<<std::endl;
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
@@ -321,11 +383,11 @@ void menu2(){
             continue;
         }
         if(judge==8){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞº¯ÊısetµÄÒì³£²âÊÔ"<<std::endl;
-            std::cout<<"º¯ÊısetÊµÏÖµÄ¹¦ÄÜÊÇÒÀ¾İË÷ÒıĞŞ¸ÄÖµ£¬"<<std::endl;
-            std::cout<<"ÀıÈçÒÀ¾İË÷Òı3£¬ĞŞ¸ÄÊı¾İa[3]"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œå‡½æ•°setçš„å¼‚å¸¸æµ‹è¯•"<<std::endl;
+            std::cout<<"å‡½æ•°setå®ç°çš„åŠŸèƒ½æ˜¯ä¾æ®ç´¢å¼•ä¿®æ”¹å€¼ï¼Œ"<<std::endl;
+            std::cout<<"ä¾‹å¦‚ä¾æ®ç´¢å¼•3ï¼Œä¿®æ”¹æ•°æ®a[3]"<<std::endl;
             try{
-                std::cout<<"ÔÚ²âÊÔÊı¾İ1ÖĞĞŞ¸ÄË÷ÒıÎª3µÄÊı¾İÎª1:"<<std::endl;
+                std::cout<<"åœ¨æµ‹è¯•æ•°æ®1ä¸­ä¿®æ”¹ç´¢å¼•ä¸º3çš„æ•°æ®ä¸º1:"<<std::endl;
                 vec1.set(3,1);
                 vec1.display();
             }catch(const char*e){
@@ -337,44 +399,44 @@ void menu2(){
 }
 
 void menu3(){
- std::string arr1[5]{"h","e","l","l","0"};
-    std::string arr2[5]{"w","o","r","l","d"};
-    std::string arr3[3]{"C","+","+"};
+ char arr1[]="hello";
+    char arr2[]="world";
+    char arr3[]="C++";
     while (true){
         String str1(5,arr1);
         String str2(5,arr2);
         String str3(3,arr3);
         std::cout<<std::endl<<std::endl;
-        std::cout<<"~~ËµÃ÷£º±¾²Ëµ¥ÊÇ²âÊÔÅÉÉúÀà×Ö·û´®~~"<<std::endl;
-        std::cout<<"~~²âÊÔÊı¾İÓĞ£º~~"<<std::endl;
-        std::cout<<"²âÊÔÊı¾İ1£¨hello£©: ";
+        std::cout<<"~~è¯´æ˜ï¼šæœ¬èœå•æ˜¯æµ‹è¯•æ´¾ç”Ÿç±»å­—ç¬¦ä¸²~~"<<std::endl;
+        std::cout<<"~~æµ‹è¯•æ•°æ®æœ‰ï¼š~~"<<std::endl;
+        std::cout<<"æµ‹è¯•æ•°æ®1ï¼ˆhelloï¼‰: ";
         str1.display();
-        std::cout<<"²âÊÔÊı¾İ2£¨world£©: ";
+        std::cout<<"æµ‹è¯•æ•°æ®2ï¼ˆworldï¼‰: ";
         str2.display();
-        std::cout<<"²âÊÔÊı¾İ3£¨C++£©: ";
+        std::cout<<"æµ‹è¯•æ•°æ®3ï¼ˆC++ï¼‰: ";
         str3.display();
-        std::cout<<"**********ÅÉÉú×Ö·û´®¡¤¹¦ÄÜÑİÊ¾**********"<<std::endl;
-        std::cout<<"*****1.¡°ÔËËã·û=¡±¹¦ÄÜÑİÊ¾*******"<<std::endl;
-        std::cout<<"*****2.¡°ÔËËã·û+=¡±¹¦ÄÜÑİÊ¾*******"<<std::endl;
-        std::cout<<"*****3.¡°º¯Êıget¡±¹¦ÄÜÑİÊ¾*******"<<std::endl;
-        std::cout<<"*****4.¡°º¯Êıset¡±¹¦ÄÜÑİÊ¾*******"<<std::endl;
-        std::cout<<"*****5.¡°ÔËËã·û=¡±Òì³£²Ù×÷¹¦ÄÜÑİÊ¾"<<std::endl;
-        //std::cout<<"*****6.¡°ÔËËã·û+¡±Òì³£²Ù×÷¹¦ÄÜÑİÊ¾"<<std::endl;
-        std::cout<<"*****6.¡°º¯Êıget¡±Òì³£²Ù×÷¹¦ÄÜÑİÊ¾"<<std::endl;
-        std::cout<<"*****7.¡°º¯Êıset¡±Òì³£²Ù×÷¹¦ÄÜÑİÊ¾"<<std::endl;
+        std::cout<<"**********æ´¾ç”Ÿå­—ç¬¦ä¸²Â·åŠŸèƒ½æ¼”ç¤º**********"<<std::endl;
+        std::cout<<"*****1.â€œè¿ç®—ç¬¦=â€åŠŸèƒ½æ¼”ç¤º*******"<<std::endl;
+        std::cout<<"*****2.â€œè¿ç®—ç¬¦+=â€åŠŸèƒ½æ¼”ç¤º*******"<<std::endl;
+        std::cout<<"*****3.â€œå‡½æ•°getâ€åŠŸèƒ½æ¼”ç¤º*******"<<std::endl;
+        std::cout<<"*****4.â€œå‡½æ•°setâ€åŠŸèƒ½æ¼”ç¤º*******"<<std::endl;
+        std::cout<<"*****5.â€œè¿ç®—ç¬¦=â€å¼‚å¸¸æ“ä½œåŠŸèƒ½æ¼”ç¤º"<<std::endl;
+        //std::cout<<"*****6.â€œè¿ç®—ç¬¦+â€å¼‚å¸¸æ“ä½œåŠŸèƒ½æ¼”ç¤º"<<std::endl;
+        std::cout<<"*****6.â€œå‡½æ•°getâ€å¼‚å¸¸æ“ä½œåŠŸèƒ½æ¼”ç¤º"<<std::endl;
+        std::cout<<"*****7.â€œå‡½æ•°setâ€å¼‚å¸¸æ“ä½œåŠŸèƒ½æ¼”ç¤º"<<std::endl;
         std::cout<<"===================================="<<std::endl;
-        std::cout<<"*******ÇëÊäÈë²Ù×÷(°´0ÍË³ö): ";
+        std::cout<<"*******è¯·è¾“å…¥æ“ä½œ(æŒ‰0é€€å‡º): ";
         int judge;
         std::cin>>judge;        
         if(judge==0){
             break;
         }
         if(judge==1){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞ¸³ÖµÔËËã·û=µÄ²âÊÔ"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œèµ‹å€¼è¿ç®—ç¬¦=çš„æµ‹è¯•"<<std::endl;
             try{
-                std::cout<<"½«²âÊÔÊı¾İ2¸³Öµ¸ø²âÊÔÊı¾İ1"<<std::endl;
+                std::cout<<"å°†æµ‹è¯•æ•°æ®2èµ‹å€¼ç»™æµ‹è¯•æ•°æ®1"<<std::endl;
                 str1=std::move(str2);
-                std::cout<<"Êä³ö²âÊÔÊı¾İ1"<<std::endl;
+                std::cout<<"è¾“å‡ºæµ‹è¯•æ•°æ®1"<<std::endl;
                 str1.display();
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
@@ -382,23 +444,23 @@ void menu3(){
             continue;
         }
         if(judge==2){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞ¸³ÖµÔËËã·û+=µÄ²âÊÔ"<<std::endl;
-                std::cout<<"½«²âÊÔÊı¾İ2Óë²âÊÔÊı¾İ1Ïà¼Ó"<<std::endl;
-                //std::string result_arr[10]{};
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œèµ‹å€¼è¿ç®—ç¬¦+=çš„æµ‹è¯•"<<std::endl;
+                std::cout<<"å°†æµ‹è¯•æ•°æ®2ä¸æµ‹è¯•æ•°æ®1ç›¸åŠ "<<std::endl;
+                //char result_arr[10]{};
                 //String result(10,result_arr);
                 //result=std::move(str1+str2);
                 str1+=str2;
                 str1.display();
-                std::cout<<"Êä³öÏà¼ÓºóµÄ×Ö·û´®"<<std::endl;
+                std::cout<<"è¾“å‡ºç›¸åŠ åçš„å­—ç¬¦ä¸²"<<std::endl;
                 //result.display();
             continue;
         }
          if(judge==3){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞº¯ÊıgetµÄ²âÊÔ"<<std::endl;
-            std::cout<<"º¯ÊıgetÊµÏÖµÄ¹¦ÄÜÊÇÒÀ¾İË÷Òı·µ»ØÖµ£¬"<<std::endl;
-            std::cout<<"ÀıÈçÒÀ¾İË÷Òı3£¬µÃµ½Êı¾İa[3]"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œå‡½æ•°getçš„æµ‹è¯•"<<std::endl;
+            std::cout<<"å‡½æ•°getå®ç°çš„åŠŸèƒ½æ˜¯ä¾æ®ç´¢å¼•è¿”å›å€¼ï¼Œ"<<std::endl;
+            std::cout<<"ä¾‹å¦‚ä¾æ®ç´¢å¼•3ï¼Œå¾—åˆ°æ•°æ®a[3]"<<std::endl;
             try{
-                std::cout<<"ÔÚ²âÊÔÊı¾İ1ÖĞ·µ»ØË÷ÒıÎª2µÄÊı¾İ:"<<std::endl;
+                std::cout<<"åœ¨æµ‹è¯•æ•°æ®1ä¸­è¿”å›ç´¢å¼•ä¸º2çš„æ•°æ®:"<<std::endl;
                 std::cout<<str1.get(2)<<std::endl;
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
@@ -406,12 +468,12 @@ void menu3(){
             continue;
         }
          if(judge==4){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞº¯ÊısetµÄ²âÊÔ"<<std::endl;
-            std::cout<<"º¯ÊısetÊµÏÖµÄ¹¦ÄÜÊÇÒÀ¾İË÷ÒıĞŞ¸ÄÖµ£¬"<<std::endl;
-            std::cout<<"ÀıÈçÒÀ¾İË÷Òı3£¬ĞŞ¸ÄÊı¾İa[3]"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œå‡½æ•°setçš„æµ‹è¯•"<<std::endl;
+            std::cout<<"å‡½æ•°setå®ç°çš„åŠŸèƒ½æ˜¯ä¾æ®ç´¢å¼•ä¿®æ”¹å€¼ï¼Œ"<<std::endl;
+            std::cout<<"ä¾‹å¦‚ä¾æ®ç´¢å¼•3ï¼Œä¿®æ”¹æ•°æ®a[3]"<<std::endl;
             try{
-                std::cout<<"ÔÚ²âÊÔÊı¾İ1ÖĞĞŞ¸ÄË÷ÒıÎª2µÄÊı¾İÎªX:"<<std::endl;
-                str1.set(2,"X");
+                std::cout<<"åœ¨æµ‹è¯•æ•°æ®1ä¸­ä¿®æ”¹ç´¢å¼•ä¸º2çš„æ•°æ®ä¸ºX:"<<std::endl;
+                str1.set(2,'X');
                 str1.display();
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
@@ -419,11 +481,11 @@ void menu3(){
             continue;
         }
          if(judge==5){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞ¸³ÖµÔËËã·û=Òì³£µÄ²âÊÔ"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œèµ‹å€¼è¿ç®—ç¬¦=å¼‚å¸¸çš„æµ‹è¯•"<<std::endl;
             try{
-                std::cout<<"½«²âÊÔÊı¾İ1¸³Öµ¸ø²âÊÔÊı¾İ3"<<std::endl;
+                std::cout<<"å°†æµ‹è¯•æ•°æ®1èµ‹å€¼ç»™æµ‹è¯•æ•°æ®3"<<std::endl;
                 str3=std::move(str1);
-                std::cout<<"Êä³ö²âÊÔÊı¾İ1"<<std::endl;
+                std::cout<<"è¾“å‡ºæµ‹è¯•æ•°æ®1"<<std::endl;
                 str1.display();
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
@@ -432,11 +494,11 @@ void menu3(){
         
         }
          if(judge==6){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞº¯ÊıgetÒì³£µÄ²âÊÔ"<<std::endl;
-            std::cout<<"º¯ÊıgetÊµÏÖµÄ¹¦ÄÜÊÇÒÀ¾İË÷Òı·µ»ØÖµ£¬"<<std::endl;
-            std::cout<<"ÀıÈçÒÀ¾İË÷Òı3£¬µÃµ½Êı¾İa[3]"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œå‡½æ•°getå¼‚å¸¸çš„æµ‹è¯•"<<std::endl;
+            std::cout<<"å‡½æ•°getå®ç°çš„åŠŸèƒ½æ˜¯ä¾æ®ç´¢å¼•è¿”å›å€¼ï¼Œ"<<std::endl;
+            std::cout<<"ä¾‹å¦‚ä¾æ®ç´¢å¼•3ï¼Œå¾—åˆ°æ•°æ®a[3]"<<std::endl;
             try{
-                std::cout<<"ÔÚ²âÊÔÊı¾İ1ÖĞ·µ»ØË÷ÒıÎª5µÄÊı¾İ:"<<std::endl;
+                std::cout<<"åœ¨æµ‹è¯•æ•°æ®1ä¸­è¿”å›ç´¢å¼•ä¸º5çš„æ•°æ®:"<<std::endl;
                 std::cout<<str1.get(5)<<std::endl;
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
@@ -444,12 +506,12 @@ void menu3(){
             continue;
         }
          if(judge==7){
-            std::cout<<std::endl<<"ÏÂÃæ½øĞĞº¯ÊısetµÄ²âÊÔ"<<std::endl;
-            std::cout<<"º¯ÊısetÊµÏÖµÄ¹¦ÄÜÊÇÒÀ¾İË÷ÒıĞŞ¸ÄÖµ£¬"<<std::endl;
-            std::cout<<"ÀıÈçÒÀ¾İË÷Òı3£¬ĞŞ¸ÄÊı¾İa[3]"<<std::endl;
+            std::cout<<std::endl<<"ä¸‹é¢è¿›è¡Œå‡½æ•°setçš„æµ‹è¯•"<<std::endl;
+            std::cout<<"å‡½æ•°setå®ç°çš„åŠŸèƒ½æ˜¯ä¾æ®ç´¢å¼•ä¿®æ”¹å€¼ï¼Œ"<<std::endl;
+            std::cout<<"ä¾‹å¦‚ä¾æ®ç´¢å¼•3ï¼Œä¿®æ”¹æ•°æ®a[3]"<<std::endl;
             try{
-                std::cout<<"ÔÚ²âÊÔÊı¾İ1ÖĞĞŞ¸ÄË÷ÒıÎª5µÄÊı¾İÎªX:"<<std::endl;
-                str1.set(5,"X");
+                std::cout<<"åœ¨æµ‹è¯•æ•°æ®1ä¸­ä¿®æ”¹ç´¢å¼•ä¸º5çš„æ•°æ®ä¸ºX:"<<std::endl;
+                str1.set(5,'X');
                 str1.display();
             }catch(const char*e){
                 std::cerr<<e<<std::endl;
