@@ -259,9 +259,14 @@ void menu2(){
         int arr1[3]{10,20,30};
         int arr2[3]{20,30,40};
         int arr3[4]{10,20,30,40};
-        DerivedVector<int> vec1(3,arr1);    
-        DerivedVector<int> vec3(4,arr3);
-        DerivedVector<int> vec2(3,arr2);
+        //Vector<int>*vec1=&DerivedVector(3,arr1);    
+        DerivedVector<int> _vec1(3,arr1);
+        DerivedVector<int> _vec2(3,arr2);
+        DerivedVector<int> _vec3(4,arr3);
+        Vector<int>&vec1=_vec1;
+        Vector<int>&vec2=_vec2;
+        Vector<int>&vec3=_vec3;
+        //Vector<int>*vec2=&DerivedVector(3,arr2);
         std::cout<<std::endl<<std::endl;
         std::cout<<"~~说明：本菜单是测试派生类向量模板~~"<<std::endl;
         std::cout<<"~~测试数据有：~~"<<std::endl;
@@ -403,9 +408,12 @@ void menu3(){
     char arr2[]="world";
     char arr3[]="C++";
     while (true){
-        String str1(5,arr1);
-        String str2(5,arr2);
-        String str3(3,arr3);
+        String _str1(5,arr1);
+        String _str2(5,arr2);
+        String _str3(3,arr3);
+        Vector<char> &str1=_str1;
+        Vector<char> &str2=_str2;
+        Vector<char> &str3=_str3;
         std::cout<<std::endl<<std::endl;
         std::cout<<"~~说明：本菜单是测试派生类字符串~~"<<std::endl;
         std::cout<<"~~测试数据有：~~"<<std::endl;
